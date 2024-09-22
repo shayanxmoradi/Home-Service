@@ -1,9 +1,12 @@
 package org.example;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import org.example.entites.BaseEntity;
 import org.example.entites.Customer;
 import org.example.entites.Service;
+import org.example.exceptions.ServiceAlreadyExistsException;
 import org.example.repositories.service.ServiceRepo;
 import org.example.repositories.service.ServiceRepoImpl;
 import org.example.services.service.ServiceService;
@@ -18,34 +21,46 @@ public class Main {
 
         ApplicationContext applicationContext = ApplicationContext.getInstance();
         entityManager = applicationContext.getEntityManager();
-//        createNewCustomer();
 
-//        Service service = new Service();
-//        service.setName("cleaning");
-//
-//
-//        Service subService = new Service();
-//        subService.setName("home-service");
-//        service.addSubService(subService);
-//
-//        entityManager.getTransaction().begin();
-//        entityManager.persist(service);
-//        entityManager.getTransaction().commit();
 
-//        createService();
+
+
         ServiceRepo baseRepo= new ServiceRepoImpl(entityManager);
         ServiceService serviceService = new ServiceServiceImpl(baseRepo);
-//       serviceService.save(new Service("parent"));
+        deleteById(502L);
+        System.out.println("still working");
+        Service service = new Service("sandilix");
+        createSubService(502L,service);
 
-//        Service parent = new Service("child");
-//        parent.setId(2L);
-//        parent.setParent(1L);
-        Service subService = new Service("grand child");
 
-        serviceService.addSubService(2L, subService);
 
 
     }
+    public static void createSubService(Long parentService, Service subService) {
+        ServiceRepo baseRepo= new ServiceRepoImpl(entityManager);
+        ServiceService serviceService = new ServiceServiceImpl(baseRepo);
+
+        try {
+            if (serviceService.addSubService(parentService, subService)==true) {
+
+                System.out.println("Subservice added successfully.");
+            }
+        } catch (ServiceAlreadyExistsException e) {
+            // Handle the exception, e.g., inform the user
+            System.err.println(e.getMessage());
+        }
+    }
+    public static void deleteById(Long id) {
+
+        ServiceRepo baseRepo= new ServiceRepoImpl(entityManager);
+        ServiceService serviceService = new ServiceServiceImpl(baseRepo);
+        try {
+            serviceService.deleteById(id);
+        } catch (EntityExistsException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 
     private static void createService() {
         entityManager.getTransaction().begin();

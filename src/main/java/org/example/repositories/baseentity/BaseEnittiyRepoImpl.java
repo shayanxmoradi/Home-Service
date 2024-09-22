@@ -1,8 +1,10 @@
 package org.example.repositories.baseentity;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
 import org.example.entites.BaseEntity;
+import org.example.exceptions.NoEntityFoundException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -32,10 +34,24 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
 
     @Override
     public boolean deleteByID(ID id) {
-        entityManager.getTransaction().begin();
-        entityManager.remove(entityManager.find(BaseEntity.class, id));
-        entityManager.getTransaction().commit();
-        return true;
+        try {
+            entityManager.getTransaction().begin();
+            T entity = entityManager.find(getEntityClass(), id);
+            if (entity == null) {
+                entityManager.getTransaction().rollback();
+                System.err.println("Entity with ID " + id + " does not exist.");
+                return false;
+            }
+            entityManager.remove(entityManager.find(getEntityClass(), id));
+            entityManager.getTransaction().commit();
+            return true;
+
+        }catch (NoEntityFoundException e){
+            entityManager.getTransaction().rollback();
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
     @Override

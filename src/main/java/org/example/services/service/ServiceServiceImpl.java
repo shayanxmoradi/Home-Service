@@ -2,10 +2,12 @@ package org.example.services.service;
 
 import org.example.entites.Service;
 import org.example.repositories.service.ServiceRepo;
-import org.example.services.baseentity.BaseEnitityServce;
 import org.example.services.baseentity.BaseEntityServceImpl;
 
- public class ServiceServiceImpl extends BaseEntityServceImpl<Service,Long,ServiceRepo> implements ServiceService {
+import java.util.List;
+import java.util.Optional;
+
+public class ServiceServiceImpl extends BaseEntityServceImpl<Service,Long,ServiceRepo> implements ServiceService {
     ServiceRepo serviceRepo;
 
 
@@ -16,21 +18,29 @@ import org.example.services.baseentity.BaseEntityServceImpl;
 
 
      @Override
-     public Service findByName(String name) {
-         return null;
+     public Optional<Service> findByName(String name) {
+         return serviceRepo.findByName(name);
      }
-
+@Deprecated
      @Override
      public boolean addSubService(Service parentService, Service subService) {
-        //todo check if its not duplicate
-         if (serviceRepo.findByName(subService.getName()) != null) {
+        //todo check if this is best practice
+         Optional<Service> byName = serviceRepo.findByName(subService.getName());
+         if (byName.isPresent()) {
+             System.err.printf("service with name %s already exists\n", subService.getName());
              return false;
          }
+
          return serviceRepo.addSubService(parentService, subService);
      }
 
      @Override
      public boolean addSubService(Long parentId, Service subService) {
+         Optional<Service> byName = serviceRepo.findByName(subService.getName());
+         if (byName.isPresent()) {
+             System.err.printf("service with name %s already exists\n", subService.getName());
+             return false;
+         }
          return serviceRepo.addSubService(parentId, subService);
      }
 
@@ -38,4 +48,9 @@ import org.example.services.baseentity.BaseEntityServceImpl;
      public boolean removeSubService(Service service) {
          return false;
      }
- }
+
+    @Override
+    public List<Service> findAllByParentId(Long parentId) {
+        return serviceRepo.findAllByParentId(parentId);
+    }
+}
