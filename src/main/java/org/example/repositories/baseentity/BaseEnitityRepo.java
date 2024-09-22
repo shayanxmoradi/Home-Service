@@ -1,4 +1,4 @@
-package org.example.repositories;
+package org.example.repositories.baseentity;
 
 import org.example.entites.BaseEntity;
 

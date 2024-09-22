@@ -1,12 +1,12 @@
-package org.example.services;
+package org.example.services.baseentity;
 
 import org.example.entites.BaseEntity;
-import org.example.repositories.BaseEnitityRepo;
+import org.example.repositories.baseentity.BaseEnitityRepo;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class BaseEntityServceImpl<T extends BaseEntity<ID>,ID extends Serializable,R extends BaseEnitityRepo<T,ID>> implements BaseEnitityRepo<T,ID> {
+public class BaseEntityServceImpl<T extends BaseEntity<ID>,ID extends Serializable,R extends BaseEnitityRepo<T,ID>> implements BaseEnitityServce<T,ID> {
   public final R baseRepository;
 
     public BaseEntityServceImpl(R baseRepo) {
@@ -24,16 +24,14 @@ public class BaseEntityServceImpl<T extends BaseEntity<ID>,ID extends Serializab
     }
 
     @Override
-    public boolean deleteByID(ID id) {
-        return baseRepository.deleteByID(id);
+    public boolean delete(T entity) {
+        return baseRepository.delelte(entity);
     }
 
     @Override
-    public boolean delelte(T eintity) {
-        return baseRepository.delelte(eintity);
+    public boolean deleteById(ID id) {
+        return baseRepository.deleteByID(id);
     }
-
-
 
 
 
@@ -47,4 +45,5 @@ public class BaseEntityServceImpl<T extends BaseEntity<ID>,ID extends Serializab
     public List<T> findAll() {
         return baseRepository.findAll();
     }
+
 }

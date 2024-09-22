@@ -1,15 +1,14 @@
-package org.example.repositories;
+package org.example.repositories.baseentity;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.example.entites.BaseEntity;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-public  abstract class BaseEnittiyRepoImpl <T extends BaseEntity<ID>,ID extends Serializable> implements BaseEnitityRepo<T,ID> {
-public final EntityManager entityManager;
+public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends Serializable> implements BaseEnitityRepo<T, ID> {
+    public final EntityManager entityManager;
 
     protected BaseEnittiyRepoImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
@@ -33,10 +32,10 @@ public final EntityManager entityManager;
 
     @Override
     public boolean deleteByID(ID id) {
-entityManager.getTransaction().begin();
-entityManager.remove(entityManager.find(BaseEntity.class, id));
-entityManager.getTransaction().commit();
-return true;
+        entityManager.getTransaction().begin();
+        entityManager.remove(entityManager.find(BaseEntity.class, id));
+        entityManager.getTransaction().commit();
+        return true;
     }
 
     @Override
@@ -52,9 +51,8 @@ return true;
         entityManager.getTransaction().begin();
         T founded;
         try {
-            founded = entityManager.find(getEntityClass(),id);
-        }
-        finally {
+            founded = entityManager.find(getEntityClass(), id);
+        } finally {
             entityManager.close();
         }
         entityManager.getTransaction().commit();
@@ -63,11 +61,13 @@ return true;
 
     @Override
     public List<T> findAll() {
-entityManager.getTransaction().begin();
+        entityManager.getTransaction().begin();
         TypedQuery<T> query = entityManager.createQuery("SELECT e FROM " + getEntityClass().getName() + " e", getEntityClass());
 
         return query.getResultList();
     }
+
     public abstract Class<T> getEntityClass();
+
 
 }
