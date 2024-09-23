@@ -1,5 +1,6 @@
 package org.example.repositories.specialist;
 
+import org.example.entites.Service;
 import org.example.entites.Specialist;
 import org.example.entites.SpecialistStatus;
 import org.example.repositories.baseentity.BaseEnitityRepo;
@@ -10,4 +11,6 @@ public interface SpecialistRepo extends BaseEnitityRepo<Specialist,Long> {
     List<Specialist> getSpecialistByStatus(SpecialistStatus status);
 
     void changeSpecialistStatusById(Long specialistId, SpecialistStatus newStatus);
+
+
 }

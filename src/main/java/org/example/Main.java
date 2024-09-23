@@ -38,17 +38,17 @@ public class Main {
         Service service = new Service("daftar");
         service.setDescription("no description");
         service.setBase_price(10220.20F);
-        createSubService(null, service);
+        //createSubService(null, service);
         showAllByParentId(902);
 
 
         //store spefcialist
-        //savingSpecialist();
+      //  savingSpecialist();
         //deletespecialistById(902l);
 
         showingAllSpecialists();
 
-        changeStatusOfSpecialistById(1002l,SpecialistStatus.APPROVED);
+       // changeStatusOfSpecialistById(1002l, SpecialistStatus.APPROVED);
 
 
         Specialist specialist;
@@ -61,6 +61,22 @@ public class Main {
         //    retriveImageOfSpecialist(specialist, "/Users/shayan/Desktop/saved.jpg");
 
 
+        // adding specialist to a subservice
+       addingSpecialistToService(1l, 2l);
+
+
+    }
+
+    private static void addingSpecialistToService(long specialistId, long subServiceId) {
+        SpecialistRepo baseRepo = new SpecialistRepoImpl(entityManager);
+        Specialist specialist = baseRepo.findById(specialistId);
+
+        ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
+        Service service = serviceRepo.findById(subServiceId);
+
+        AdminService adminService = new AdminServiceImpl(null, serviceRepo);
+        adminService.addingSpecialistToSubService(specialist, service);
+
     }
 
     private static void changeStatusOfSpecialistById(long l, SpecialistStatus status) {
@@ -68,7 +84,7 @@ public class Main {
 
 
         AdminService adminService = new AdminServiceImpl(null, baseRepo);
-        adminService.changeSpecialistStatusById(baseRepo.findById(l),status);
+        adminService.changeSpecialistStatusById(baseRepo.findById(l), status);
     }
 
     private static void showingAllSpecialists() {

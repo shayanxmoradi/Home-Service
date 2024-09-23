@@ -1,6 +1,7 @@
 package org.example.repositories.service;
 
 import org.example.entites.Service;
+import org.example.entites.Specialist;
 import org.example.repositories.baseentity.BaseEnitityRepo;
 
 import java.util.List;
@@ -12,4 +13,6 @@ public interface ServiceRepo extends BaseEnitityRepo<Service,Long> {
     boolean addSubService(Long parentId, Service subService);
     boolean removeSubService(Service service);
     List<Service> findAllByParentId(Long parentId);
+    void addingSpecialistToSubService(Specialist specialist, Service subService);
+
 }

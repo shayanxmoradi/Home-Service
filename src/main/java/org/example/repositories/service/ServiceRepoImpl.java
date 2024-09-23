@@ -3,6 +3,7 @@ package org.example.repositories.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.example.entites.Service;
+import org.example.entites.Specialist;
 import org.example.repositories.baseentity.BaseEnittiyRepoImpl;
 
 import java.util.ArrayList;
@@ -85,5 +86,10 @@ public class ServiceRepoImpl extends BaseEnittiyRepoImpl<Service, Long> implemen
         }
         return allDescendants;
 
+    }
+    @Override
+    public void addingSpecialistToSubService(Specialist specialist, Service subService) {
+        subService.getAvilableSpecialists().add(specialist);
+        update(subService);
     }
 }

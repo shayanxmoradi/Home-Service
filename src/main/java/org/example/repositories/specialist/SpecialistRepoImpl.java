@@ -60,4 +60,6 @@ public class SpecialistRepoImpl extends BaseEnittiyRepoImpl<Specialist,Long> imp
             }
             throw e; // Re-throw the exception after rollback
         }}
+
+
 }

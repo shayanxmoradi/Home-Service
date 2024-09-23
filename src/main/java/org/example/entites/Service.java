@@ -37,7 +37,7 @@ public class Service extends BaseEntity<Long> {
     private Float base_price;
 
     @OneToMany
-    private List<Specialist> avilableSpecialists = new ArrayList<>();
+    private List<Specialist> avilableSpecialists = new ArrayList<>();//todo if its partent cant get specialist
 
     
 
