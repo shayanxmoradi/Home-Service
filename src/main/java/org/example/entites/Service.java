@@ -36,6 +36,9 @@ public class Service extends BaseEntity<Long> {
     @Column(name = BASE_PRICE)
     private Float base_price;
 
+    @OneToMany
+    private List<Specialist> avilableSpecialists = new ArrayList<>();
+
     
 
     public void addSubService(Service subService) {

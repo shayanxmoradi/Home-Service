@@ -20,11 +20,19 @@ public class Specialist extends BaseUser {
     private Double rate=0.0;
 
     @OneToMany
-    List<Service> workServices;
+    List<Service > workServices;
 
 
     @Lob
     @Column(name = "image_data",length = 300000)
     private byte[] personalImage;
 
+    @Override
+    public String toString() {
+        return "Specialist{" +
+               "specialistStatus=" + specialistStatus +
+               ", rate=" + rate +
+               ", workServices=" + workServices +
+               '}';
+    }
 }

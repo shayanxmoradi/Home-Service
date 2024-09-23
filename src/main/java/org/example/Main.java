@@ -2,21 +2,18 @@ package org.example;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import org.example.entites.*;
 import org.example.exceptions.FileNotFoundException;
 import org.example.exceptions.ImageTooLargeException;
 import org.example.exceptions.ServiceAlreadyExistsException;
-import org.example.repositories.admin.AdminRepo;
-import org.example.repositories.admin.AdminRepoImpl;
 import org.example.repositories.service.ServiceRepo;
 import org.example.repositories.service.ServiceRepoImpl;
 import org.example.repositories.specialist.SpecialistRepo;
 import org.example.repositories.specialist.SpecialistRepoImpl;
 import org.example.services.service.ServiceService;
 import org.example.services.service.ServiceServiceImpl;
-import org.example.services.service.admin.AdminService;
-import org.example.services.service.admin.AdminServiceImpl;
+import org.example.services.admin.AdminService;
+import org.example.services.admin.AdminServiceImpl;
 import org.example.services.speciallist.SpeciallistService;
 import org.example.services.speciallist.SpeciallistServiceImpl;
 import org.example.util.ApplicationContext;
@@ -47,17 +44,39 @@ public class Main {
 
         //store spefcialist
         //savingSpecialist();
-        deletespecialistById(902l);
+        //deletespecialistById(902l);
+
+        showingAllSpecialists();
+
+        changeStatusOfSpecialistById(1002l,SpecialistStatus.APPROVED);
+
+
         Specialist specialist;
 
         SpecialistRepo baseRepox = new SpecialistRepoImpl(entityManager);
 
         SpeciallistService speciallistService = new SpeciallistServiceImpl(baseRepox);
-        specialist = speciallistService.findById(102l);
+        //specialist = speciallistService.findById(102l);
 
-    //    retriveImageOfSpecialist(specialist, "/Users/shayan/Desktop/saved.jpg");
+        //    retriveImageOfSpecialist(specialist, "/Users/shayan/Desktop/saved.jpg");
 
 
+    }
+
+    private static void changeStatusOfSpecialistById(long l, SpecialistStatus status) {
+        SpecialistRepo baseRepo = new SpecialistRepoImpl(entityManager);
+
+
+        AdminService adminService = new AdminServiceImpl(null, baseRepo);
+        adminService.changeSpecialistStatusById(baseRepo.findById(l),status);
+    }
+
+    private static void showingAllSpecialists() {
+        SpecialistRepo baseRepo = new SpecialistRepoImpl(entityManager);
+
+
+        AdminService adminService = new AdminServiceImpl(null, baseRepo);
+        System.out.println(adminService.getAllSpecialist());
     }
 
     private static void deletespecialistById(long l) {
@@ -75,7 +94,7 @@ public class Main {
         specialist.setPassword("123123");
         try {
 
-            specialist.setEmail("shayanZShs@gmail.com");// checks duplicate
+            specialist.setEmail("shayanZSxhzs@gmail.com");// checks duplicate
 
             specialist.setSpecialistStatus(SpecialistStatus.NEW);
 

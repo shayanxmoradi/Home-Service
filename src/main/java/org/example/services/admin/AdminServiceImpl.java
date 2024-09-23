@@ -1,11 +1,14 @@
-package org.example.services.service.admin;
+package org.example.services.admin;
 
 import org.example.entites.Admin;
+import org.example.entites.BaseUser;
 import org.example.entites.Specialist;
+import org.example.entites.SpecialistStatus;
 import org.example.repositories.admin.AdminRepo;
 import org.example.repositories.specialist.SpecialistRepo;
 import org.example.services.baseentity.BaseEntityServceImpl;
-import org.example.services.speciallist.SpeciallistService;
+
+import java.util.List;
 
 public class AdminServiceImpl extends BaseEntityServceImpl<Admin,Long,AdminRepo> implements AdminService {
     final SpecialistRepo specialistRepo;
@@ -30,5 +33,28 @@ public class AdminServiceImpl extends BaseEntityServceImpl<Admin,Long,AdminRepo>
         specialistRepo.deleteByID(specialistId);
     }
 
+    @Override
+    public List<Specialist> getAllSpecialist() {
+        return specialistRepo.findAll();
+    }
 
+    @Override
+    public List<Specialist> getSpecialistByStatus(SpecialistStatus status) {
+        return specialistRepo.getSpecialistByStatus(status);
+    }
+
+    @Override
+    public List<BaseUser> getAllUsers() {
+        return List.of();
+    }
+
+    @Override
+    public void changeSpecialistStatusById(Specialist specialistId, SpecialistStatus newStatus) {
+    //    specialistRepo.changeSpecialistStatusById(specialistId, newStatus);
+//
+//        Specialist foundedUser = specialistRepo.findById(specialistId);
+        specialistId.setSpecialistStatus(newStatus);
+        specialistRepo.update(specialistId);
+       // specialistRepo.changeSpecialistStatusById(specialistId,newStatus);
+    }
 }

@@ -26,7 +26,8 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
 
     @Override
     public T update(T entity) {
-        entityManager.getTransaction().begin();
+            entityManager.getTransaction().begin();
+
         entityManager.merge(entity);
         entityManager.getTransaction().commit();
         return entity;
@@ -46,7 +47,7 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
             entityManager.getTransaction().commit();
             return true;
 
-        }catch (NoEntityFoundException e){
+        } catch (NoEntityFoundException e) {
             entityManager.getTransaction().rollback();
             e.printStackTrace();
             return false;
@@ -64,20 +65,24 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
 
     @Override
     public T findById(ID id) {
-        entityManager.getTransaction().begin();
-        T founded;
-        try {
-            founded = entityManager.find(getEntityClass(), id);
-        } finally {
-            entityManager.close();
-        }
-        entityManager.getTransaction().commit();
-        return founded;
+
+        return entityManager.find(getEntityClass(), id);
+
+//            entityManager.getTransaction().begin();
+//
+//        T founded;
+//        try {
+//            founded = entityManager.find(getEntityClass(), id);
+//        } finally {
+//            entityManager.close();
+//        }
+//        entityManager.getTransaction().commit();
+//        return founded;
     }
 
     @Override
     public List<T> findAll() {
-        entityManager.getTransaction().begin();
+       // entityManager.getTransaction().begin();
         TypedQuery<T> query = entityManager.createQuery("SELECT e FROM " + getEntityClass().getName() + " e", getEntityClass());
 
         return query.getResultList();
