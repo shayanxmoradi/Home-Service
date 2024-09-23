@@ -7,12 +7,16 @@ import org.example.entites.*;
 import org.example.exceptions.FileNotFoundException;
 import org.example.exceptions.ImageTooLargeException;
 import org.example.exceptions.ServiceAlreadyExistsException;
+import org.example.repositories.admin.AdminRepo;
+import org.example.repositories.admin.AdminRepoImpl;
 import org.example.repositories.service.ServiceRepo;
 import org.example.repositories.service.ServiceRepoImpl;
 import org.example.repositories.specialist.SpecialistRepo;
 import org.example.repositories.specialist.SpecialistRepoImpl;
 import org.example.services.service.ServiceService;
 import org.example.services.service.ServiceServiceImpl;
+import org.example.services.service.admin.AdminService;
+import org.example.services.service.admin.AdminServiceImpl;
 import org.example.services.speciallist.SpeciallistService;
 import org.example.services.speciallist.SpeciallistServiceImpl;
 import org.example.util.ApplicationContext;
@@ -42,34 +46,60 @@ public class Main {
 
 
         //store spefcialist
-        Specialist specialist = new Specialist();
-        specialist.setFirstName("shayanh");
-        specialist.setLastName("shayanh");
-        specialist.setPassword("123123");
-        specialist.setSpecialistStatus(SpecialistStatus.NEW);
+        //savingSpecialist();
+        deletespecialistById(902l);
+        Specialist specialist;
 
+        SpecialistRepo baseRepox = new SpecialistRepoImpl(entityManager);
 
-        Specialist specialistWithImage = savingImageToSpecialist(specialist,"/Users/shayan/Desktop/worker.jpg");
+        SpeciallistService speciallistService = new SpeciallistServiceImpl(baseRepox);
+        specialist = speciallistService.findById(102l);
 
-
-        //   saveSpecialist(specialist);
-        
-              SpecialistRepo baseRepox= new SpecialistRepoImpl(entityManager);
-
-        SpeciallistService  speciallistService = new SpeciallistServiceImpl(baseRepox); 
-        specialist=speciallistService.findById(102l);
-
-        retriveImageOfSpecialist(specialist,"/Users/shayan/Desktop/saved.jpg");
+    //    retriveImageOfSpecialist(specialist, "/Users/shayan/Desktop/saved.jpg");
 
 
     }
 
-    private static Specialist savingImageToSpecialist(Specialist specialist,String filePath) {
+    private static void deletespecialistById(long l) {
+        SpecialistRepo baseRepo = new SpecialistRepoImpl(entityManager);
+
+
+        AdminService adminService = new AdminServiceImpl(null, baseRepo);
+        adminService.deleteSpcialistById(l);
+    }
+
+    private static void savingSpecialist() {
+        Specialist specialist = new Specialist();
+        specialist.setFirstName("shayanh");
+        specialist.setLastName("shayanh");
+        specialist.setPassword("123123");
+        try {
+
+            specialist.setEmail("shayanZShs@gmail.com");// checks duplicate
+
+            specialist.setSpecialistStatus(SpecialistStatus.NEW);
+
+
+            Specialist specialistWithImage = savingImageToSpecialist(specialist, "/Users/shayan/Desktop/x.jpg");
+
+            if (specialistWithImage == null) {
+                System.out.printf("no image found");
+            } else {
+                saveSpecialist(specialistWithImage);
+            }
+        } catch (EntityExistsException e) {
+            System.out.printf("duplicate email");
+            return;
+        }
+
+    }
+
+    private static Specialist savingImageToSpecialist(Specialist specialist, String filePath) {
         try {
             File imageFile = new File(filePath);
 
             if (!imageFile.exists()) {
-                throw new org.example.exceptions.FileNotFoundException("Image file not found at the  path.",filePath);
+                throw new org.example.exceptions.FileNotFoundException("Image file not found at the  path.", filePath);
             }
 
             if (imageFile.length() > 300 * 1024) {
@@ -86,7 +116,7 @@ public class Main {
             return specialist;
 
         } catch (FileNotFoundException e) {
-            System.err.println(e.getMessage()+": \n"+e.getFilePath());
+            System.err.println(e.getMessage() + ": \n" + e.getFilePath());
         } catch (ImageTooLargeException e) {
             System.err.println(e.getMessage());
         } catch (IOException e) {
@@ -96,29 +126,36 @@ public class Main {
 
         return null;
     }
-    private static void retriveImageOfSpecialist(Specialist specialist,String savingPath) {
+
+    private static void retriveImageOfSpecialist(Specialist specialist, String savingPath) {
         try {
 
-                byte[] imageData = specialist.getPersonalImage();
+            byte[] imageData = specialist.getPersonalImage();
 
-                // Save the image data to a file
-                FileOutputStream fileOutputStream = new FileOutputStream(savingPath);
-                fileOutputStream.write(imageData);
-                fileOutputStream.close();
+            // Save the image data to a file
+            FileOutputStream fileOutputStream = new FileOutputStream(savingPath);
+            fileOutputStream.write(imageData);
+            fileOutputStream.close();
 
-                System.out.println("Image retrieved and saved to file successfully!");
+            System.out.println("Image retrieved and saved to file successfully!");
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("An IO error occurred while processing the image.");
         }
     }
 
     private static void saveSpecialist(Specialist specialist) {
         SpecialistRepo baseRepo = new SpecialistRepoImpl(entityManager);
 
-        SpeciallistService  speciallistService = new SpeciallistServiceImpl(baseRepo);
-        speciallistService.save(specialist);
+
+        AdminService adminService = new AdminServiceImpl(null, baseRepo);
+        try {
+
+            adminService.saveSpecialist(specialist);
+        } catch (EntityExistsException e) {
+            System.out.printf(e.getMessage());
+        }
     }
 
     private static void showAllByParentId(long l) {

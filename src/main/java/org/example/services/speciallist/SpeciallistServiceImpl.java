@@ -11,4 +11,5 @@ public class SpeciallistServiceImpl extends BaseEntityServceImpl<Specialist,Long
         super(baseRepo);
         this.specialistRepo = baseRepo;
     }
+    //todo exists by email
 }

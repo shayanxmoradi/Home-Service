@@ -1,6 +1,7 @@
 package org.example.entites;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.sql.Date;
@@ -14,6 +15,7 @@ public class BaseUser extends BaseEntity<Long> {
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
     private static final String PASSWORD = "password";
+    private static final String EMAIL = "email";
 
 
     @Column(nullable = false,name = FIRST_NAME)
@@ -21,7 +23,7 @@ public class BaseUser extends BaseEntity<Long> {
     @Column(nullable = false,name = LAST_NAME)
     private String lastName;
 
-    @Column(unique = true)
+    @Column(nullable = false,name = EMAIL)//todo add unique
     private String email;
 
     @Column
@@ -30,6 +32,7 @@ public class BaseUser extends BaseEntity<Long> {
     @Column
     private Time registrationTime;
 
+    @Size(min = 8, max = 8, message = "The length must be exactly 16 characters.")
 
     @Column(nullable = false,name = PASSWORD)
     private String password;
