@@ -65,6 +65,8 @@ public class Service extends BaseEntity<Long> {
     public String toString() {
         return "Service{" +
                "name='" + name + '\'' +
+               ", description='" + description + '\'' +
+               ", base_price=" + base_price +
                '}';
     }
 }

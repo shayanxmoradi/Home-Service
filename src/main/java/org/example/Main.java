@@ -3,45 +3,137 @@ package org.example;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import org.example.entites.BaseEntity;
-import org.example.entites.Customer;
-import org.example.entites.Service;
+import org.example.entites.*;
+import org.example.exceptions.FileNotFoundException;
+import org.example.exceptions.ImageTooLargeException;
 import org.example.exceptions.ServiceAlreadyExistsException;
 import org.example.repositories.service.ServiceRepo;
 import org.example.repositories.service.ServiceRepoImpl;
+import org.example.repositories.specialist.SpecialistRepo;
+import org.example.repositories.specialist.SpecialistRepoImpl;
 import org.example.services.service.ServiceService;
 import org.example.services.service.ServiceServiceImpl;
+import org.example.services.speciallist.SpeciallistService;
+import org.example.services.speciallist.SpeciallistServiceImpl;
 import org.example.util.ApplicationContext;
+
+import java.io.*;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static EntityManager entityManager;
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws IOException {
 
         ApplicationContext applicationContext = ApplicationContext.getInstance();
         entityManager = applicationContext.getEntityManager();
 
 
-
-
-        ServiceRepo baseRepo= new ServiceRepoImpl(entityManager);
+        ServiceRepo baseRepo = new ServiceRepoImpl(entityManager);
         ServiceService serviceService = new ServiceServiceImpl(baseRepo);
         deleteById(502L);
         System.out.println("still working");
-        Service service = new Service("sandilix");
-        createSubService(502L,service);
+        Service service = new Service("daftar");
+        service.setDescription("no description");
+        service.setBase_price(10220.20F);
+        createSubService(null, service);
+        showAllByParentId(902);
 
 
+        //store spefcialist
+        Specialist specialist = new Specialist();
+        specialist.setFirstName("shayanh");
+        specialist.setLastName("shayanh");
+        specialist.setPassword("123123");
+        specialist.setSpecialistStatus(SpecialistStatus.NEW);
+
+
+        Specialist specialistWithImage = savingImageToSpecialist(specialist,"/Users/shayan/Desktop/worker.jpg");
+
+
+        //   saveSpecialist(specialist);
+        
+              SpecialistRepo baseRepox= new SpecialistRepoImpl(entityManager);
+
+        SpeciallistService  speciallistService = new SpeciallistServiceImpl(baseRepox); 
+        specialist=speciallistService.findById(102l);
+
+        retriveImageOfSpecialist(specialist,"/Users/shayan/Desktop/saved.jpg");
 
 
     }
+
+    private static Specialist savingImageToSpecialist(Specialist specialist,String filePath) {
+        try {
+            File imageFile = new File(filePath);
+
+            if (!imageFile.exists()) {
+                throw new org.example.exceptions.FileNotFoundException("Image file not found at the  path.",filePath);
+            }
+
+            if (imageFile.length() > 300 * 1024) {
+                throw new ImageTooLargeException("Image exceeds 300KB, cannot store it.");
+            }
+
+            FileInputStream fileInputStream = new FileInputStream(imageFile);
+            byte[] imageData = new byte[(int) imageFile.length()];
+            fileInputStream.read(imageData);
+            fileInputStream.close();
+
+            specialist.setPersonalImage(imageData);
+            System.out.println("Image saved successfully!");
+            return specialist;
+
+        } catch (FileNotFoundException e) {
+            System.err.println(e.getMessage()+": \n"+e.getFilePath());
+        } catch (ImageTooLargeException e) {
+            System.err.println(e.getMessage());
+        } catch (IOException e) {
+            System.err.println("An IO error occurred while processing the image.");
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    private static void retriveImageOfSpecialist(Specialist specialist,String savingPath) {
+        try {
+
+                byte[] imageData = specialist.getPersonalImage();
+
+                // Save the image data to a file
+                FileOutputStream fileOutputStream = new FileOutputStream(savingPath);
+                fileOutputStream.write(imageData);
+                fileOutputStream.close();
+
+                System.out.println("Image retrieved and saved to file successfully!");
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveSpecialist(Specialist specialist) {
+        SpecialistRepo baseRepo = new SpecialistRepoImpl(entityManager);
+
+        SpeciallistService  speciallistService = new SpeciallistServiceImpl(baseRepo);
+        speciallistService.save(specialist);
+    }
+
+    private static void showAllByParentId(long l) {
+        //todo hirarechy is not shown just showing all childerns!
+        ServiceRepo baseRepo = new ServiceRepoImpl(entityManager);
+        ServiceService serviceService = new ServiceServiceImpl(baseRepo);
+        System.out.println(serviceService.findAllByParentId(l));
+    }
+
     public static void createSubService(Long parentService, Service subService) {
-        ServiceRepo baseRepo= new ServiceRepoImpl(entityManager);
+        ServiceRepo baseRepo = new ServiceRepoImpl(entityManager);
         ServiceService serviceService = new ServiceServiceImpl(baseRepo);
 
         try {
-            if (serviceService.addSubService(parentService, subService)==true) {
+            if (serviceService.addSubService(parentService, subService) == true) {
 
                 System.out.println("Subservice added successfully.");
             }
@@ -50,9 +142,10 @@ public class Main {
             System.err.println(e.getMessage());
         }
     }
+
     public static void deleteById(Long id) {
 
-        ServiceRepo baseRepo= new ServiceRepoImpl(entityManager);
+        ServiceRepo baseRepo = new ServiceRepoImpl(entityManager);
         ServiceService serviceService = new ServiceServiceImpl(baseRepo);
         try {
             serviceService.deleteById(id);
