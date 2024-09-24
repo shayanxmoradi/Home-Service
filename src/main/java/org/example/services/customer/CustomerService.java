@@ -11,5 +11,6 @@ public interface CustomerService extends BaseEnitityServce<Customer,Long> {
     //todo
     public List<Service> getAllFirstLayerServices();
     Order registerOrder(Customer customer,Order order);
+    List<Order> getCustomerOrders(Customer customer);
 
 }

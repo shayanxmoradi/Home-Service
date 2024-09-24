@@ -33,8 +33,14 @@ public class CustomerServiceImpl extends BaseEntityServceImpl<Customer,Long, Cus
     @Override
     public Order registerOrder(Customer customer,Order order) {
         customer.addOrder(order);
+        order.setCustomer(customer);
         Order savedOrder = orderRepo.save(order);
         baseRepository.update(customer);
     return savedOrder;
+    }
+
+    @Override
+    public List<Order> getCustomerOrders(Customer customer) {
+        return orderRepo.findOrderOfCustomer(customer.getId());
     }
 }

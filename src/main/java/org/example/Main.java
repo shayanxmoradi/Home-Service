@@ -30,6 +30,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -82,11 +83,22 @@ public class Main {
         showFirstLayerServices();
 
 
-       // createNewCustomer();
+      // createNewCustomer();
 
         registerOrder();
+        System.out.println("customer orders");
+
+        getOrderOfCustomer(102l).stream().forEach(System.out::println);
 
 
+
+    }
+
+    private static List<Order> getOrderOfCustomer(long l) {
+        CustomerRepo customerRepo = new CustomerRepoImpl(entityManager);
+        OrderRepo orderRepo = new OrderRepoImpl(entityManager);
+        CustomerService customerService = new CustomerServiceImpl(customerRepo,orderRepo);
+    return customerService.getCustomerOrders(getCustomerById(l));
     }
 
     private static void registerOrder() {
@@ -109,10 +121,13 @@ public class Main {
         OrderRepo opRepo = new OrderRepoImpl(entityManager);
         CustomerRepo cRepo = new CustomerRepoImpl(entityManager);
         CustomerService customerService = new CustomerServiceImpl(cRepo,opRepo);
-        Customer choesnCustomer = customerService.findById(2l);
+        Customer choesnCustomer = customerService.findById(102l);
         customerService.registerOrder(choesnCustomer,order);
     }
 
+    public static Customer getCustomerById(long id) {
+        return entityManager.find(Customer.class, id);
+    }
     private static void showFirstLayerServices() {
         ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
         CustomerRepo customerRepo = new CustomerRepoImpl(entityManager);

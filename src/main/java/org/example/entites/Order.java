@@ -13,6 +13,8 @@ import java.util.List;
 @Data
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "order_type", discriminatorType = DiscriminatorType.STRING)
+
 public class Order extends BaseEntity<Long> {
     public static final String TABLE_NAME = "orders";
 
@@ -39,7 +41,7 @@ public class Order extends BaseEntity<Long> {
     @PrimaryKeyJoinColumn
     private Address address;
 
-    @OneToOne
+    @ManyToOne
     private Customer customer ;
 
     @OneToMany
@@ -55,5 +57,18 @@ public class Order extends BaseEntity<Long> {
     @Column
     private OrderStatus status=OrderStatus.WAITING_FOR_SPECIALISTS_OFFERS;
 
-
+    @Override
+    public String toString() {
+        return "Order{" +
+               "choosenService=" + choosenService +
+               ", orderDescription='" + orderDescription + '\'' +
+               ", offeredPrice=" + offeredPrice +
+               ", serviceDate=" + serviceDate +
+               ", serviceTime=" + serviceTime +
+               ", address=" + address +
+               ", status=" + status +
+               ", speclistsWhoOffered=" + speclistsWhoOffered +
+               ", chosenSpecialist=" + chosenSpecialist +
+               '}';
+    }
 }
