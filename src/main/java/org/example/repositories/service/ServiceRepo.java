@@ -13,6 +13,7 @@ public interface ServiceRepo extends BaseEnitityRepo<Service,Long> {
     boolean addSubService(Long parentId, Service subService);
     boolean removeSubService(Service service);
     List<Service> findAllByParentId(Long parentId);
+    List<Service> findFirstLayerServices();
     void addingSpecialistToSubService(Specialist specialist, Service subService);
 
 }

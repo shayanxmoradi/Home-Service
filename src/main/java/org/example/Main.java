@@ -3,13 +3,20 @@ package org.example;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityManager;
 import org.example.entites.*;
+import org.example.entites.enums.SpecialistStatus;
 import org.example.exceptions.FileNotFoundException;
 import org.example.exceptions.ImageTooLargeException;
 import org.example.exceptions.ServiceAlreadyExistsException;
+import org.example.repositories.customer.CustomerRepo;
+import org.example.repositories.customer.CustomerRepoImpl;
+import org.example.repositories.order.OrderRepo;
+import org.example.repositories.order.OrderRepoImpl;
 import org.example.repositories.service.ServiceRepo;
 import org.example.repositories.service.ServiceRepoImpl;
 import org.example.repositories.specialist.SpecialistRepo;
 import org.example.repositories.specialist.SpecialistRepoImpl;
+import org.example.services.customer.CustomerService;
+import org.example.services.customer.CustomerServiceImpl;
 import org.example.services.service.ServiceService;
 import org.example.services.service.ServiceServiceImpl;
 import org.example.services.admin.AdminService;
@@ -19,6 +26,11 @@ import org.example.services.speciallist.SpeciallistServiceImpl;
 import org.example.util.ApplicationContext;
 
 import java.io.*;
+import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -43,12 +55,12 @@ public class Main {
 
 
         //store spefcialist
-      //  savingSpecialist();
+        //  savingSpecialist();
         //deletespecialistById(902l);
 
         showingAllSpecialists();
 
-       // changeStatusOfSpecialistById(1002l, SpecialistStatus.APPROVED);
+        // changeStatusOfSpecialistById(1002l, SpecialistStatus.APPROVED);
 
 
         Specialist specialist;
@@ -62,9 +74,45 @@ public class Main {
 
 
         // adding specialist to a subservice
-       addingSpecialistToService(1l, 2l);
+        // addingSpecialistToService(1l, 2l);
 
 
+        // customerside
+
+        showFirstLayerServices();
+
+        registerOrder();
+
+
+    }
+
+    private static void registerOrder() {
+        Order order = new Order();
+        order.setOrderDescription("test");
+        Address address = new Address();
+        address.setStreet("street");
+        address.setCity("city");
+        address.setState("state");
+        address.setZip("zip");
+        order.setAddress(address);
+        ServiceRepo baseRepo = new ServiceRepoImpl(entityManager);
+        ServiceService serviceService = new ServiceServiceImpl(baseRepo);
+        Optional<Service> serviceByName = serviceService.findByName("mizi");
+        order.setChoosenService(serviceByName.get());
+        order.setOfferedPrice(2222.2);//todo should be gerather than base price
+        order.setServiceTime(Time.valueOf(LocalTime.now()));
+        order.setServiceDate(Date.valueOf(LocalDate.now()));
+        OrderRepo opRepo = new OrderRepoImpl(entityManager);
+        CustomerService customerService = new CustomerServiceImpl(null,opRepo);
+        customerService.registerOrder(order);
+    }
+
+    private static void showFirstLayerServices() {
+        ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
+        CustomerRepo customerRepo = new CustomerRepoImpl(entityManager);
+        CustomerService customerService = new CustomerServiceImpl(customerRepo, serviceRepo);
+        System.out.printf("after here");
+        System.out.println(customerService.getAllFirstLayerServices());
     }
 
     private static void addingSpecialistToService(long specialistId, long subServiceId) {

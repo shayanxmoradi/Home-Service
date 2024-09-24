@@ -2,6 +2,7 @@ package org.example.entites;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.example.entites.enums.SpecialistStatus;
 
 import java.util.List;
 

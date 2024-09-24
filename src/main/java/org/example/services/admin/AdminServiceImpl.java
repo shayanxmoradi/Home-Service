@@ -1,6 +1,7 @@
 package org.example.services.admin;
 
 import org.example.entites.*;
+import org.example.entites.enums.SpecialistStatus;
 import org.example.repositories.admin.AdminRepo;
 import org.example.repositories.service.ServiceRepo;
 import org.example.repositories.specialist.SpecialistRepo;

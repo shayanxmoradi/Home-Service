@@ -87,6 +87,12 @@ public class ServiceRepoImpl extends BaseEnittiyRepoImpl<Service, Long> implemen
         return allDescendants;
 
     }
+
+    @Override
+    public List<Service> findFirstLayerServices() {
+        TypedQuery<Service> query = entityManager.createQuery("SELECT s FROM Service s WHERE s.parentService.id IS NULL", Service.class);
+  return query.getResultList();    }
+
     @Override
     public void addingSpecialistToSubService(Specialist specialist, Service subService) {
         subService.getAvilableSpecialists().add(specialist);

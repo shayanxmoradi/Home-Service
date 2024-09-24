@@ -1,10 +1,10 @@
 package org.example.services.admin;
 
 import org.example.entites.*;
+import org.example.entites.enums.SpecialistStatus;
 import org.example.services.baseentity.BaseEnitityServce;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface AdminService extends BaseEnitityServce<Admin, Long> {
     public void saveSpecialist(Specialist specialist);

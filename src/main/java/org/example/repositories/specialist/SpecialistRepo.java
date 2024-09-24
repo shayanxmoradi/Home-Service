@@ -1,8 +1,7 @@
 package org.example.repositories.specialist;
 
-import org.example.entites.Service;
 import org.example.entites.Specialist;
-import org.example.entites.SpecialistStatus;
+import org.example.entites.enums.SpecialistStatus;
 import org.example.repositories.baseentity.BaseEnitityRepo;
 
 import java.util.List;

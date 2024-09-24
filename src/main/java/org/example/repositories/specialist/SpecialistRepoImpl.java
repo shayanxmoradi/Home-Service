@@ -3,9 +3,8 @@ package org.example.repositories.specialist;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
-import org.example.entites.Service;
 import org.example.entites.Specialist;
-import org.example.entites.SpecialistStatus;
+import org.example.entites.enums.SpecialistStatus;
 import org.example.repositories.baseentity.BaseEnittiyRepoImpl;
 
 import java.util.List;
