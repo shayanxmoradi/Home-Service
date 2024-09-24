@@ -7,6 +7,7 @@ import org.example.entites.enums.OrderStatus;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.List;
 
 @Table(name = Order.TABLE_NAME)
 @Data
@@ -36,8 +37,19 @@ public class Order extends BaseEntity<Long> {
 
     @OneToOne(cascade = CascadeType.ALL)  // Cascade the persist operation
     @PrimaryKeyJoinColumn
-
     private Address address;
+
+    @OneToOne
+    private Customer customer ;
+
+    @OneToMany
+    private List<Specialist> speclistsWhoOffered;
+
+    @OneToOne
+    private Specialist chosenSpecialist;
+
+
+
 
     @Enumerated(EnumType.STRING)
     @Column

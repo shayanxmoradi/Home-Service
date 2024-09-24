@@ -81,6 +81,9 @@ public class Main {
 
         showFirstLayerServices();
 
+
+       // createNewCustomer();
+
         registerOrder();
 
 
@@ -102,9 +105,12 @@ public class Main {
         order.setOfferedPrice(2222.2);//todo should be gerather than base price
         order.setServiceTime(Time.valueOf(LocalTime.now()));
         order.setServiceDate(Date.valueOf(LocalDate.now()));
+
         OrderRepo opRepo = new OrderRepoImpl(entityManager);
-        CustomerService customerService = new CustomerServiceImpl(null,opRepo);
-        customerService.registerOrder(order);
+        CustomerRepo cRepo = new CustomerRepoImpl(entityManager);
+        CustomerService customerService = new CustomerServiceImpl(cRepo,opRepo);
+        Customer choesnCustomer = customerService.findById(2l);
+        customerService.registerOrder(choesnCustomer,order);
     }
 
     private static void showFirstLayerServices() {
@@ -343,12 +349,17 @@ public class Main {
 
     private static void createNewCustomer() {
         Customer customer = new Customer();
-        customer.setFirstName("John");
+        customer.setFirstName("shayan");
+        customer.setLastName("moradi");
+        customer.setEmail("s@gmail.com");
+        customer.setRegistrationDate(Date.valueOf(LocalDate.now()));
+        customer.setRegistrationTime(Time.valueOf(LocalTime.now()));
         customer.setPassword("1234");
 
-        entityManager.getTransaction().begin();
-        entityManager.persist(customer);
-        entityManager.getTransaction().commit();
+        CustomerRepo customerRepo=new CustomerRepoImpl(entityManager);
+        CustomerService customerService = new CustomerServiceImpl(customerRepo);
+        customerService.save(customer);
+
     }
 
 }

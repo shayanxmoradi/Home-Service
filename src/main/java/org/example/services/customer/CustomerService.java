@@ -8,7 +8,8 @@ import org.example.services.baseentity.BaseEnitityServce;
 import java.util.List;
 
 public interface CustomerService extends BaseEnitityServce<Customer,Long> {
+    //todo
     public List<Service> getAllFirstLayerServices();
-    Order registerOrder(Order order);
+    Order registerOrder(Customer customer,Order order);
 
 }
