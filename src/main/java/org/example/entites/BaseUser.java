@@ -23,7 +23,7 @@ public class BaseUser extends BaseEntity<Long> {
     @Column(nullable = false,name = LAST_NAME)
     private String lastName;
 
-    @Column(nullable = false,name = EMAIL)//todo add unique
+    @Column(nullable = false,name = EMAIL,unique = true)//todo add unique
     private String email;
 
     @Column
@@ -36,4 +36,7 @@ public class BaseUser extends BaseEntity<Long> {
 
     @Column(nullable = false,name = PASSWORD)
     private String password;
+
+    @OneToOne
+    Wallet wallet;
 }

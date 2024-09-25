@@ -6,11 +6,13 @@ import org.example.entites.Service;
 import org.example.services.baseentity.BaseEnitityServce;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomerService extends BaseEnitityServce<Customer,Long> {
     //todo
     public List<Service> getAllFirstLayerServices();
     Order registerOrder(Customer customer,Order order);
-    List<Order> getCustomerOrders(Customer customer);
+    Optional<List<Order>>getCustomerOrders(Customer customer);
+    Optional<Customer> getCustomerByEmail(String email);
 
 }

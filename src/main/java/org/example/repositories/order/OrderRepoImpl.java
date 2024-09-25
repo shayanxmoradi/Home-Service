@@ -6,6 +6,7 @@ import org.example.entites.Order;
 import org.example.repositories.baseentity.BaseEnittiyRepoImpl;
 
 import java.util.List;
+import java.util.Optional;
 
 public class OrderRepoImpl extends BaseEnittiyRepoImpl<Order, Long> implements OrderRepo {
 
@@ -19,9 +20,9 @@ public class OrderRepoImpl extends BaseEnittiyRepoImpl<Order, Long> implements O
     }
 
     @Override
-    public List<Order> findOrderOfCustomer(Long id) {
+    public Optional<List<Order>> findOrderOfCustomer(Long id) {
         TypedQuery<Order> query = entityManager.createQuery("SELECT o From Order  o where o.customer.id = :customer_id", Order.class);
         query.setParameter("customer_id", id);
-        return query.getResultList();
+        return Optional.ofNullable(query.getResultList());
     }
 }

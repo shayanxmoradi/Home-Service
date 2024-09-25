@@ -52,7 +52,7 @@ public class Order extends BaseEntity<Long> {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "status_id", nullable = false)
+    @JoinColumn(name = "status_id", nullable = true)
     private OrderStatus status;
 
 //
@@ -74,4 +74,5 @@ public class Order extends BaseEntity<Long> {
                ", chosenSpecialist=" + chosenSpecialist +
                '}';
     }
+
 }

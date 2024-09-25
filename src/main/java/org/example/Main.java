@@ -30,6 +30,8 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,22 +85,37 @@ public class Main {
         showFirstLayerServices();
 
 
-      // createNewCustomer();
+      createNewCustomer();
 
-        registerOrder();
+        //registerOrder();
         System.out.println("customer orders");
 
-        getOrderOfCustomer(102l).stream().forEach(System.out::println);
+
+            getOrderOfCustomer(102l);
+//                    .orElse(Collections.emptyList())
+//                  .forEach(System.out::println);
 
 
 
     }
 
-    private static List<Order> getOrderOfCustomer(long l) {
+    private static Optional<List<Order>> getOrderOfCustomer(long l) {
         CustomerRepo customerRepo = new CustomerRepoImpl(entityManager);
         OrderRepo orderRepo = new OrderRepoImpl(entityManager);
         CustomerService customerService = new CustomerServiceImpl(customerRepo,orderRepo);
-    return customerService.getCustomerOrders(getCustomerById(l));
+        if (getCustomerById(l).isEmpty()) {
+            System.out.println("no customer found");
+            return Optional.empty();
+        }
+
+        return customerService.getCustomerOrders(getCustomerById(l).get());
+
+//        if (customerService.getCustomerOrders(getCustomerById(l)).isEmpty()) {
+//            System.err.println("customer orders not found");
+//            return null;
+      //  }
+
+ //   return customerService.getCustomerOrders(getCustomerById(l)).get();
     }
 
     private static void registerOrder() {
@@ -126,8 +143,8 @@ public class Main {
         customerService.registerOrder(choesnCustomer,order);
     }
 
-    public static Customer getCustomerById(long id) {
-        return entityManager.find(Customer.class, id);
+    public static Optional<Customer> getCustomerById(long id) {
+        return Optional.ofNullable(entityManager.find(Customer.class, id));
     }
     private static void showFirstLayerServices() {
         ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
