@@ -1,13 +1,17 @@
 package org.example.repositories.baseentity;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.example.entites.BaseEntity;
 import org.example.exceptions.NoEntityFoundException;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends Serializable> implements BaseEnitityRepo<T, ID> {
     public final EntityManager entityManager;
@@ -89,6 +93,18 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
     }
 
     public abstract Class<T> getEntityClass();
+
+    public Optional<List<T>> findWithAttribute(Class<T> clazz, String attributeName, Object attributeValue) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> cq = cb.createQuery(clazz);
+        Root<T> root = cq.from(clazz);
+
+        // Create dynamic condition for the attribute
+        Predicate predicate = cb.equal(root.get(attributeName), attributeValue);
+
+        cq.where(predicate);
+        return Optional.ofNullable(entityManager.createQuery(cq).getResultList());
+    }
 
 
 }

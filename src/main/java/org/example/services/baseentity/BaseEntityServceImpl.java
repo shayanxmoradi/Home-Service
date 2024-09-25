@@ -5,6 +5,7 @@ import org.example.repositories.baseentity.BaseEnitityRepo;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 public class BaseEntityServceImpl<T extends BaseEntity<ID>,ID extends Serializable,R extends BaseEnitityRepo<T,ID>> implements BaseEnitityServce<T,ID> {
   public final R baseRepository;
@@ -45,5 +46,7 @@ public class BaseEntityServceImpl<T extends BaseEntity<ID>,ID extends Serializab
     public List<T> findAll() {
         return baseRepository.findAll();
     }
-
+    public Optional<List<T>> findByAttribute(Class<T> clazz, String attributeName, Object attributeValue) {
+        return baseRepository.findWithAttribute(clazz, attributeName, attributeValue);
+    }
 }

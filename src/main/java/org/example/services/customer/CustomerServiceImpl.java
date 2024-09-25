@@ -51,12 +51,21 @@ public class CustomerServiceImpl extends BaseEntityServceImpl<Customer,Long, Cus
         return Optional.of(baseRepository.getCustomerByEmail(email).get());
     }
 
+//    @Override
+//    public Customer save(Customer entity) {
+//        if (getCustomerByEmail(entity.getEmail()).isPresent()) {
+//            System.err.println("Customer with emailalready exists");
+//            return null;
+//        }
+//        return super.save(entity);
+//    }
     @Override
     public Customer save(Customer entity) {
-        if (getCustomerByEmail(entity.getEmail()).isPresent()) {
-            System.err.println("Customer with emailalready exists");
-            return null;
+        if ( baseRepository.findWithAttribute(Customer.class, "email", entity.getEmail()).get().isEmpty()) {
+            return super.save(entity);
+
         }
-        return super.save(entity);
+        System.err.println("Customer with emailalready exists");
+        return null;
     }
 }

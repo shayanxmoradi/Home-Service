@@ -91,9 +91,9 @@ public class Main {
         System.out.println("customer orders");
 
 
-            getOrderOfCustomer(102l);
-//                    .orElse(Collections.emptyList())
-//                  .forEach(System.out::println);
+            getOrderOfCustomer(102l)
+                .orElse(Collections.emptyList())
+                  .forEach(System.out::println);
 
 
 
@@ -384,7 +384,7 @@ public class Main {
         Customer customer = new Customer();
         customer.setFirstName("shayan");
         customer.setLastName("moradi");
-        customer.setEmail("s@gmail.com");
+        customer.setEmail("ss22@gmail.com");
         customer.setRegistrationDate(Date.valueOf(LocalDate.now()));
         customer.setRegistrationTime(Time.valueOf(LocalTime.now()));
         customer.setPassword("1234");
