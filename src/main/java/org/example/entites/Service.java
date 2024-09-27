@@ -24,7 +24,7 @@ public class Service extends BaseEntity<Long> {
     @JoinColumn(name = PARENT_SERVICE_ID)
     private Service parentService;
 
-    @OneToMany(mappedBy = "parentService", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "parentService",  cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Service> subServices= new ArrayList<>();
 
     @Column(name = SERVICE_NAME)
@@ -37,7 +37,10 @@ public class Service extends BaseEntity<Long> {
     private Float base_price;
 
     @OneToMany
-    private List<Specialist> avilableSpecialists = new ArrayList<>();//todo if its partent cant get specialist
+    private List<Specialist> avilableSpecialists = new ArrayList<>();
+
+    @Column
+    private boolean isCategory;
 
     
 

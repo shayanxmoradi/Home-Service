@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface CustomerRepo extends BaseEnitityRepo<Customer,Long> {
 
     Optional<Customer> getCustomerByEmail(String email);
+
+    Optional<Customer> findByEmailAndPass(String username, String password);
 }

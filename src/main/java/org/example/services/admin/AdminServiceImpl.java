@@ -23,7 +23,15 @@ public class AdminServiceImpl extends BaseEntityServceImpl<Admin,Long,AdminRepo>
     }
 
     public void saveSpecialist(Specialist specialist) {
-        specialistRepo.save(specialist); // Delegate to SpecialistService
+
+        if ( specialistRepo.findWithAttribute(Specialist.class, "email", specialist.getEmail()).get().isEmpty()) {
+
+            specialistRepo.save(specialist); // Delegate to SpecialistService
+        }
+        System.err.println("Customer with emailalready exists");
+
+
+
     }
 
     @Override
@@ -39,7 +47,7 @@ public class AdminServiceImpl extends BaseEntityServceImpl<Admin,Long,AdminRepo>
 
     @Override
     public List<Specialist> getAllSpecialist() {
-        return specialistRepo.findAll();
+        return specialistRepo.findAll().get();
     }
 
     @Override

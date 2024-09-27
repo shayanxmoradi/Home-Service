@@ -32,4 +32,14 @@ public class CustomerRepoImpl extends BaseEnittiyRepoImpl<Customer, Long> implem
         return Optional.of(customers);
 
     }
+
+    @Override
+    public Optional<Customer> findByEmailAndPass(String email, String password) {
+        TypedQuery<Customer> query = entityManager.createQuery(
+                "SELECT c FROM Customer c WHERE c.email = :email AND c.password = :password",getEntityClass());
+        query.setParameter("email", email);
+        query.setParameter("password", password);
+
+        return Optional.ofNullable(query.getResultStream().findFirst().get());
+    }
 }

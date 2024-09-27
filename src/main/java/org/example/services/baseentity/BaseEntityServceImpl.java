@@ -15,12 +15,12 @@ public class BaseEntityServceImpl<T extends BaseEntity<ID>,ID extends Serializab
     }
 
     @Override
-    public T save(T entity) {
+    public Optional<T> save(T entity) {
         return baseRepository.save(entity);
     }
 
     @Override
-    public T update(T entity) {
+    public Optional<T> update(T entity) {
         return baseRepository.update(entity);
     }
 
@@ -38,12 +38,12 @@ public class BaseEntityServceImpl<T extends BaseEntity<ID>,ID extends Serializab
 
 
     @Override
-    public T findById(ID id) {
+    public Optional<T> findById(ID id) {
         return baseRepository.findById(id);
     }
 
     @Override
-    public List<T> findAll() {
+    public Optional<List<T>> findAll() {
         return baseRepository.findAll();
     }
     public Optional<List<T>> findByAttribute(Class<T> clazz, String attributeName, Object attributeValue) {

@@ -25,12 +25,12 @@ import org.example.services.speciallist.SpeciallistService;
 import org.example.services.speciallist.SpeciallistServiceImpl;
 import org.example.util.ApplicationContext;
 
+import javax.management.ServiceNotFoundException;
 import java.io.*;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +41,6 @@ public class Main {
     public static EntityManager entityManager;
 
     public static void main(String[] args) throws IOException {
-
         ApplicationContext applicationContext = ApplicationContext.getInstance();
         entityManager = applicationContext.getEntityManager();
 
@@ -57,8 +56,11 @@ public class Main {
         showAllByParentId(902);
 
 
+//initializeServices();
         //store spefcialist
-        //  savingSpecialist();
+
+        savingSpecialist();
+
         //deletespecialistById(902l);
 
         showingAllSpecialists();
@@ -85,9 +87,16 @@ public class Main {
         showFirstLayerServices();
 
 
-      createNewCustomer();
+      createNewCustomer("shayan","moradi","shayan@gmail.com","12345567898");
+        Service chosenService = choseService();
+        if (chosenService != null) {
+            registerOrder(222,chosenService.getId(),803l);
 
-        //registerOrder();
+        }
+
+        
+        
+
         System.out.println("customer orders");
 
 
@@ -97,6 +106,26 @@ public class Main {
 
 
 
+    }
+
+    private  static Service choseService() {
+        ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
+CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
+        // Starting the navigation from a root service/category
+        Service selectedService = null; // root service ID is 1
+        try {
+            selectedService = customerService.navigateAndSelectService();
+        } catch (ServiceNotFoundException e) {
+            System.out.println("NOTHING FOUND");
+        return null;}
+        try {
+
+            System.out.println("Final Selected Service: " + selectedService.getName());
+            return selectedService;
+        }catch (Exception e) {
+
+        }
+        return null;
     }
 
     private static Optional<List<Order>> getOrderOfCustomer(long l) {
@@ -118,7 +147,7 @@ public class Main {
  //   return customerService.getCustomerOrders(getCustomerById(l)).get();
     }
 
-    private static void registerOrder() {
+    private static void registerOrder(float offredPrice,Long serviceId,Long customerId) {
         Order order = new Order();
         order.setOrderDescription("test");
         Address address = new Address();
@@ -129,9 +158,20 @@ public class Main {
         order.setAddress(address);
         ServiceRepo baseRepo = new ServiceRepoImpl(entityManager);
         ServiceService serviceService = new ServiceServiceImpl(baseRepo);
-        Optional<Service> serviceByName = serviceService.findByName("mizi");
+        Optional<Service> serviceByName = serviceService.findById(serviceId);
+        if (serviceByName.isEmpty()) {
+            System.out.println("no service found");
+            return;
+        }
         order.setChoosenService(serviceByName.get());
-        order.setOfferedPrice(2222.2);//todo should be gerather than base price
+        Float basePrice = serviceByName.get().getBase_price();
+        if (basePrice >offredPrice) {
+            System.out.printf("offred price is smaller than base price");
+            return;
+        }
+
+
+        order.setOfferedPrice(2222.2);
         order.setServiceTime(Time.valueOf(LocalTime.now()));
         order.setServiceDate(Date.valueOf(LocalDate.now()));
 
@@ -139,8 +179,18 @@ public class Main {
         OrderRepo opRepo = new OrderRepoImpl(entityManager);
         CustomerRepo cRepo = new CustomerRepoImpl(entityManager);
         CustomerService customerService = new CustomerServiceImpl(cRepo,opRepo);
-        Customer choesnCustomer = customerService.findById(102l);
+
+        Optional<Customer> chosenCustomerOpt = customerService.findById(customerId);
+
+        if (chosenCustomerOpt.isEmpty()) {
+            System.out.println("Customer with  this ID  not found.");
+            return;
+        }
+        Customer choesnCustomer = customerService.findById(customerId).get();
+
+
         customerService.registerOrder(choesnCustomer,order);
+
     }
 
     public static Optional<Customer> getCustomerById(long id) {
@@ -151,15 +201,19 @@ public class Main {
         CustomerRepo customerRepo = new CustomerRepoImpl(entityManager);
         CustomerService customerService = new CustomerServiceImpl(customerRepo, serviceRepo);
         System.out.printf("after here");
+        if (customerService.getAllFirstLayerServices().isEmpty()) {
+            System.out.println("no service found");
+            return;
+        }
         System.out.println(customerService.getAllFirstLayerServices());
     }
 
     private static void addingSpecialistToService(long specialistId, long subServiceId) {
         SpecialistRepo baseRepo = new SpecialistRepoImpl(entityManager);
-        Specialist specialist = baseRepo.findById(specialistId);
+        Specialist specialist = baseRepo.findById(specialistId).get();
 
         ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
-        Service service = serviceRepo.findById(subServiceId);
+        Service service = serviceRepo.findById(subServiceId).get();
 
         AdminService adminService = new AdminServiceImpl(null, serviceRepo);
         adminService.addingSpecialistToSubService(specialist, service);
@@ -171,7 +225,7 @@ public class Main {
 
 
         AdminService adminService = new AdminServiceImpl(null, baseRepo);
-        adminService.changeSpecialistStatusById(baseRepo.findById(l), status);
+        adminService.changeSpecialistStatusById(baseRepo.findById(l).get(), status);
     }
 
     private static void showingAllSpecialists() {
@@ -314,80 +368,87 @@ public class Main {
     }
 
 
-    private static void createService() {
-        entityManager.getTransaction().begin();
+    public static void initializeServices() {
+        // Create top-level services (categories)
+        Service building = new Service();
+        building.setName("Building");
+        building.setDescription("Building related services");
+        building.setCategory(true);
 
-        // Main service: Building Decoration
-        Service buildingDecoration = new Service("Building Decoration");
-        Service interiorDesign = new Service("Interior Design");
-        Service exteriorDesign = new Service("Exterior Design");
-        buildingDecoration.addSubService(interiorDesign);
-        buildingDecoration.addSubService(exteriorDesign);
+        Service vehicles = new Service();
+        vehicles.setName("Vehicles");
+        vehicles.setDescription("Vehicle-related services");
+        vehicles.setCategory(true);
 
-        // Main service: Building Installations
-        Service buildingInstallations = new Service("Building Installations");
-        Service plumbing = new Service("Plumbing");
-        Service electrical = new Service("Electrical Systems");
-        buildingInstallations.addSubService(plumbing);
-        buildingInstallations.addSubService(electrical);
+        Service moving = new Service();
+        moving.setName("Moving");
+        moving.setDescription("Moving and shipping services");
+        moving.setCategory(true);
 
-        // Main service: Transportation
-        Service transportation = new Service("Transportation");
-        Service movingServices = new Service("Moving Services");
-        Service freightServices = new Service("Freight Services");
-        transportation.addSubService(movingServices);
-        transportation.addSubService(freightServices);
+        // Subservices for Home Appliances
+        Service homeAppliances = new Service();
+        homeAppliances.setName("Home Appliances");
+        homeAppliances.setDescription("Home appliances services");
+        homeAppliances.setCategory(true);
 
-        // Main service: Household Appliances
-        Service householdAppliances = new Service("Household Appliances");
-        Service kitchenAppliances = new Service("Kitchen Appliances");
-        Service laundryAppliances = new Service("Laundry Appliances");
-        Service audioVisual = new Service("Audio and Visual Appliances");
-        householdAppliances.addSubService(kitchenAppliances);
-        householdAppliances.addSubService(laundryAppliances);
-        householdAppliances.addSubService(audioVisual);
+        Service kitchenAppliances = new Service();
+        kitchenAppliances.setName("Kitchen Appliances");
+        kitchenAppliances.setDescription("Kitchen appliances repair");
+        kitchenAppliances.setBase_price(100f);
+        kitchenAppliances.setCategory(false); // This is a real service
 
-        // Main service: Cleaning and Hygiene
-        Service cleaningHygiene = new Service("Cleaning and Hygiene");
-        Service generalCleaning = new Service("General Cleaning");
-        Service dryCleaning = new Service("Dry Cleaning");
-        Service carpetCleaning = new Service("Carpet and Upholstery Cleaning");
-        Service pestControl = new Service("Pest Control");
-        cleaningHygiene.addSubService(generalCleaning);
-        cleaningHygiene.addSubService(dryCleaning);
-        cleaningHygiene.addSubService(carpetCleaning);
-        cleaningHygiene.addSubService(pestControl);
+        Service laundry = new Service();
+        laundry.setName("Laundry Appliances");
+        laundry.setDescription("Laundry appliances repair");
+        laundry.setBase_price(120f);
+        laundry.setCategory(false); // This is a real service
 
-        // Add other main services with subservices as needed
-        // For example:
-        // Main service: Vehicle Services
-        Service vehicleServices = new Service("Vehicle Services");
-        Service carRepair = new Service("Car Repair");
-        Service carWash = new Service("Car Wash");
-        vehicleServices.addSubService(carRepair);
-        vehicleServices.addSubService(carWash);
+        homeAppliances.addSubService(kitchenAppliances);
+        homeAppliances.addSubService(laundry);
 
-        // Persist all main services (subservices will be persisted automatically)
-        entityManager.persist(buildingDecoration);
-        entityManager.persist(buildingInstallations);
-        entityManager.persist(transportation);
-        entityManager.persist(householdAppliances);
-        entityManager.persist(cleaningHygiene);
-        entityManager.persist(vehicleServices);
+        // Subservices for Cleaning and Hygiene
+        Service cleaning = new Service();
+        cleaning.setName("Cleaning");
+        cleaning.setDescription("Cleaning and hygiene services");
+        cleaning.setCategory(true);
 
-        entityManager.getTransaction().commit();
+        Service dryCleaning = new Service();
+        dryCleaning.setName("Dry Cleaning");
+        dryCleaning.setDescription("Professional dry cleaning");
+        dryCleaning.setBase_price(80f);
+        dryCleaning.setCategory(false);
 
-        entityManager.close();
+        Service carpetCleaning = new Service();
+        carpetCleaning.setName("Carpet Cleaning");
+        carpetCleaning.setDescription("Carpet and upholstery cleaning");
+        carpetCleaning.setBase_price(90f);
+        carpetCleaning.setCategory(false);
+
+        cleaning.addSubService(dryCleaning);
+        cleaning.addSubService(carpetCleaning);
+
+
+        // Save top-level services (categories) with their subservices
+
+        ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
+        ServiceService serviceService = new ServiceServiceImpl(serviceRepo);
+        serviceService.save(building);
+        serviceService.save(vehicles);
+        serviceService.save(moving);
+        serviceService.save(homeAppliances);
+        serviceService.save(cleaning);
+
+        System.out.println("Services have been initialized and saved successfully.");
     }
 
-    private static void createNewCustomer() {
+    private static void createNewCustomer(String customerName,String customerLastName,String customerEmail,String customerPass) {
         Customer customer = new Customer();
-        customer.setFirstName("shayan");
-        customer.setLastName("moradi");
-        customer.setEmail("ss22@gmail.com");
+        customer.setFirstName(customerName);
+        customer.setLastName(customerLastName);
+        customer.setEmail(customerEmail);
         customer.setRegistrationDate(Date.valueOf(LocalDate.now()));
         customer.setRegistrationTime(Time.valueOf(LocalTime.now()));
-        customer.setPassword("1234");
+        customer.setPassword(customerPass);
 
         CustomerRepo customerRepo=new CustomerRepoImpl(entityManager);
         CustomerService customerService = new CustomerServiceImpl(customerRepo);

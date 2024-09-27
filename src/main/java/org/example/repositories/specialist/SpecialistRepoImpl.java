@@ -38,7 +38,7 @@ public class SpecialistRepoImpl extends BaseEnittiyRepoImpl<Specialist,Long> imp
             }
 
             // Find the specialist
-            Specialist foundedUser = findById(specialistId);
+            Specialist foundedUser = findById(specialistId).get();
 
             if (foundedUser != null) {
                 // Set the new status

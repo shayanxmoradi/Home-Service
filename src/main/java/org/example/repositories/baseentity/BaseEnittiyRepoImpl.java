@@ -21,20 +21,20 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
     }
 
     @Override
-    public T save(T entity) {
+    public Optional<T> save(T entity) {
         entityManager.getTransaction().begin();
         entityManager.persist(entity);
         entityManager.getTransaction().commit();
-        return entity;
+        return Optional.ofNullable(entity);
     }
 
     @Override
-    public T update(T entity) {
+    public Optional<T> update(T entity) {
             entityManager.getTransaction().begin();
 
         entityManager.merge(entity);
         entityManager.getTransaction().commit();
-        return entity;
+        return Optional.ofNullable(entity);
     }
 
     @Override
@@ -68,9 +68,9 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
     }
 
     @Override
-    public T findById(ID id) {
+    public Optional<T> findById(ID id) {
 
-        return entityManager.find(getEntityClass(), id);
+        return Optional.ofNullable(entityManager.find(getEntityClass(), id));
 
 //            entityManager.getTransaction().begin();
 //
@@ -85,11 +85,11 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
     }
 
     @Override
-    public List<T> findAll() {
+    public Optional<List<T>> findAll() {
        // entityManager.getTransaction().begin();
         TypedQuery<T> query = entityManager.createQuery("SELECT e FROM " + getEntityClass().getName() + " e", getEntityClass());
 
-        return query.getResultList();
+        return Optional.ofNullable(query.getResultList());
     }
 
     public abstract Class<T> getEntityClass();
