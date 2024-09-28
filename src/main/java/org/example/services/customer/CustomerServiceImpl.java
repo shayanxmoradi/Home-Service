@@ -1,5 +1,6 @@
 package org.example.services.customer;
 
+import jakarta.validation.ValidationException;
 import org.example.entites.Customer;
 import org.example.entites.Order;
 import org.example.entites.Service;
@@ -13,16 +14,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
-public class CustomerServiceImpl extends BaseEntityServceImpl<Customer,Long, CustomerRepo> implements CustomerService {
+public class CustomerServiceImpl extends BaseEntityServceImpl<Customer, Long, CustomerRepo> implements CustomerService {
     ServiceRepo serviceRepo;
     OrderRepo orderRepo;
 
     public CustomerServiceImpl(CustomerRepo customerRepo) {
         super(customerRepo);
-    } public CustomerServiceImpl(CustomerRepo baseRepo,OrderRepo orderRepo) {
+    }
+
+    public CustomerServiceImpl(CustomerRepo baseRepo, OrderRepo orderRepo) {
         super(baseRepo);
         this.orderRepo = orderRepo;
     }
+
     public CustomerServiceImpl(CustomerRepo baseRepo, ServiceRepo serviceRepo) {
         super(baseRepo);
         this.serviceRepo = serviceRepo;
@@ -30,16 +34,20 @@ public class CustomerServiceImpl extends BaseEntityServceImpl<Customer,Long, Cus
 
     @Override
     public Optional<List<Service>> getAllFirstLayerServices() {
-      return Optional.ofNullable(serviceRepo.findFirstLayerServices());
+        return Optional.ofNullable(serviceRepo.findFirstLayerServices());
     }
 
     @Override
-    public Order registerOrder(Customer customer,Order order) {
-        customer.addOrder(order);
-        order.setCustomer(customer);
-        Order savedOrder = orderRepo.save(order).get();
-        baseRepository.update(customer);
-    return savedOrder;
+    public Order registerOrder(Customer customer, Order order) {
+        if (customer!=null) {
+            if (order != null) {
+                customer.addOrder(order);
+                order.setCustomer(customer);
+                Order savedOrder = orderRepo.save(order).get();
+                baseRepository.update(customer);
+                return savedOrder;
+            } else throw new ValidationException("customer is null");
+        } else throw new ValidationException("order is null");
     }
 
     @Override
@@ -53,7 +61,7 @@ public class CustomerServiceImpl extends BaseEntityServceImpl<Customer,Long, Cus
         return Optional.of(baseRepository.getCustomerByEmail(email).get());
     }
 
-//    @Override
+    //    @Override
 //    public Customer save(Customer entity) {
 //        if (getCustomerByEmail(entity.getEmail()).isPresent()) {
 //            System.err.println("Customer with emailalready exists");
@@ -63,15 +71,13 @@ public class CustomerServiceImpl extends BaseEntityServceImpl<Customer,Long, Cus
 //    }
     @Override
     public Optional<Customer> save(Customer entity) {
-        if ( baseRepository.findWithAttribute(Customer.class, "email", entity.getEmail()).get().isEmpty()) {
+        if (baseRepository.findWithAttribute(Customer.class, "email", entity.getEmail()).get().isEmpty()) {
             return super.save(entity);
 
         }
         System.err.println("Customer with emailalready exists");
         return null;
     }
-
-
 
 
     public Service navigateAndSelectService() throws ServiceNotFoundException {
@@ -84,20 +90,18 @@ public class CustomerServiceImpl extends BaseEntityServceImpl<Customer,Long, Cus
     }
 
     @Override
-    public void updatePassword(Customer customer, String oldPasswrod, String newPassword) {
-        Optional<Customer> byEmailAndPass = findByEmailAndPass(customer.getEmail(), oldPasswrod);
-        //todo use orelsethrow optional
-        if (byEmailAndPass.isEmpty()) {
-            System.out.printf("incorrect password");
-        }
-        Customer currentCustomer = byEmailAndPass.get();
+    public void updatePassword(Customer customer, String oldPassword, String newPassword) {
+        Customer currentCustomer = findByEmailAndPass(customer.getEmail(), oldPassword)
+                .orElseThrow(() -> new ValidationException("Incorrect password"));
+
         currentCustomer.setPassword(newPassword);
-        baseRepository.update(customer);
+
+        baseRepository.update(currentCustomer);
     }
 
     @Override
-    public Optional<Customer>findByEmailAndPass(String username, String password) {
-        return baseRepository.findByEmailAndPass(username,password);
+    public Optional<Customer> findByEmailAndPass(String username, String password) {
+        return baseRepository.findByEmailAndPass(username, password);
     }
 
     private Service navigate(Service parentService, List<Service> subServices) {
@@ -117,9 +121,10 @@ public class CustomerServiceImpl extends BaseEntityServceImpl<Customer,Long, Cus
             System.out.println((i + 1) + ". " + subServices.get(i).getName());
         }
 
-        if (subServices.size() <1) {
+        if (subServices.size() < 1) {
             System.out.printf("no subservices available\n");
-            return null;}
+            return null;
+        }
         int choice = getUserInput(subServices.size());
 
         Service chosenSubService = subServices.get(choice - 1);

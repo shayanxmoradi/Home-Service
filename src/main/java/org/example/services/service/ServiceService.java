@@ -8,7 +8,6 @@ import java.util.Optional;
 
 public interface ServiceService extends BaseEnitityServce<Service,Long> {
     Optional<Service> findByName(String name);
-    boolean addSubService(Service parentService, Service subService);
     boolean addSubService(Long parentId, Service subService);
     boolean removeSubService(Service service);
     List<Service> findAllByParentId(Long parentId);

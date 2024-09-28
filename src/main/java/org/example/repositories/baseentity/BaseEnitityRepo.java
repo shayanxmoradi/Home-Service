@@ -15,4 +15,6 @@ public interface BaseEnitityRepo<T extends BaseEntity<ID>, ID extends Serializab
     Optional<T> findById(ID id);
     public Optional<List<T>> findWithAttribute(Class<T> clazz, String attributeName, Object attributeValue);
     Optional<List<T>> findAll();
+
+    public <T> boolean existsWithAttribute(Class<T> clazz, String attributeName, Object attributeValue);
 }

@@ -21,18 +21,7 @@ public class ServiceServiceImpl extends BaseEntityServceImpl<Service,Long,Servic
      public Optional<Service> findByName(String name) {
          return serviceRepo.findByName(name);
      }
-@Deprecated
-     @Override
-     public boolean addSubService(Service parentService, Service subService) {
-        //todo check if this is best practice
-         Optional<Service> byName = serviceRepo.findByName(subService.getName());
-         if (byName.isPresent()) {
-             System.err.printf("service with name %s already exists\n", subService.getName());
-             return false;
-         }
 
-         return serviceRepo.addSubService(parentService, subService);
-     }
 
      @Override
      public boolean addSubService(Long parentId, Service subService) {
@@ -41,7 +30,6 @@ public class ServiceServiceImpl extends BaseEntityServceImpl<Service,Long,Servic
              System.err.printf("service with name %s already exists\n", subService.getName());
              return false;
          }
-         //todo change sout with excetptions
 
          return serviceRepo.addSubService(parentId, subService);
      }

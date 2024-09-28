@@ -106,6 +106,20 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
         return Optional.ofNullable(entityManager.createQuery(cq).getResultList());
     }
 
+    public <T> boolean existsWithAttribute(Class<T> clazz, String attributeName, Object attributeValue) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+        Root<T> root = cq.from(clazz);
 
+        // Create dynamic condition for the attribute
+        Predicate predicate = cb.equal(root.get(attributeName), attributeValue);
+
+        // Select count instead of the whole entity
+        cq.select(cb.count(root)).where(predicate);
+
+        // Return true if any result exists, false otherwise
+        Long count = entityManager.createQuery(cq).getSingleResult();
+        return count > 0;
+    }
 }
 

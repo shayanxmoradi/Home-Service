@@ -56,7 +56,7 @@ public class Main {
 //        showAllByParentId(902);
 
 
-initializeServices();
+        initializeServices();
         //store spefcialist
 
         savingSpecialist();
@@ -153,6 +153,7 @@ initializeServices();
         address.setState("state");
         address.setZip("zip");
         order.setAddress(address);
+
         ServiceRepo baseRepo = new ServiceRepoImpl(entityManager);
         ServiceService serviceService = new ServiceServiceImpl(baseRepo);
         Optional<Service> serviceByName = serviceService.findById(serviceId);

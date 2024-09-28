@@ -49,4 +49,9 @@ public class BaseEntityServceImpl<T extends BaseEntity<ID>,ID extends Serializab
     public Optional<List<T>> findByAttribute(Class<T> clazz, String attributeName, Object attributeValue) {
         return baseRepository.findWithAttribute(clazz, attributeName, attributeValue);
     }
+
+    @Override
+    public boolean existisByAttribute(Class<T> clazz, String attributeName, Object attributeValue) {
+        return baseRepository.existsWithAttribute( clazz,  attributeName, attributeValue);
+    }
 }

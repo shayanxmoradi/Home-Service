@@ -15,6 +15,7 @@ public interface BaseEnitityServce <T extends BaseEntity<ID>, ID extends Seriali
     Optional<T> findById(ID id);
     Optional<List<T>> findAll();
     public Optional<List<T>> findByAttribute(Class<T> clazz, String attributeName, Object attributeValue);
+    public boolean existisByAttribute(Class<T> clazz, String attributeName, Object attributeValue);
 
 
 }
