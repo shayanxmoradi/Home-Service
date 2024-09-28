@@ -13,7 +13,8 @@ public class Review extends BaseEntity<Long> {
     public static final String TABLE_NAME = "comment";
 
 
-    @OneToOne
+    @OneToOne()
+            @Column(unique = true)
     Order order;
 
     @Column(nullable = true)

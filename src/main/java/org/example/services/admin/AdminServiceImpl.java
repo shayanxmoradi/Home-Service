@@ -9,28 +9,27 @@ import org.example.services.baseentity.BaseEntityServceImpl;
 
 import java.util.List;
 
-public class AdminServiceImpl extends BaseEntityServceImpl<Admin,Long,AdminRepo> implements AdminService {
-     SpecialistRepo specialistRepo;
-     ServiceRepo serviceRepo;
+public class AdminServiceImpl extends BaseEntityServceImpl<Admin, Long, AdminRepo> implements AdminService {
+    SpecialistRepo specialistRepo;
+    ServiceRepo serviceRepo;
 
-    public AdminServiceImpl(AdminRepo baseRepo,  SpecialistRepo specialistRepo) {
+    public AdminServiceImpl(AdminRepo baseRepo, SpecialistRepo specialistRepo) {
         super(baseRepo);
         this.specialistRepo = specialistRepo;
     }
-    public AdminServiceImpl(AdminRepo baseRepo,  ServiceRepo serviceRepo) {
+
+    public AdminServiceImpl(AdminRepo baseRepo, ServiceRepo serviceRepo) {
         super(baseRepo);
         this.serviceRepo = serviceRepo;
     }
 
     public void saveSpecialist(Specialist specialist) {
 
-        if ( specialistRepo.findWithAttribute(Specialist.class, "email", specialist.getEmail()).get().isEmpty()) {
+        if (specialistRepo.findWithAttribute(Specialist.class, "email", specialist.getEmail()).get().isEmpty()) {
 
             specialistRepo.save(specialist); // Delegate to SpecialistService
         }
         System.err.println("Customer with emailalready exists");
-
-
 
     }
 
@@ -62,16 +61,19 @@ public class AdminServiceImpl extends BaseEntityServceImpl<Admin,Long,AdminRepo>
 
     @Override
     public void changeSpecialistStatusById(Specialist specialistId, SpecialistStatus newStatus) {
-    //    specialistRepo.changeSpecialistStatusById(specialistId, newStatus);
+        //todo just accept specialist
+
+        //    specialistRepo.changeSpecialistStatusById(specialistId, newStatus);
 //
 //        Specialist foundedUser = specialistRepo.findById(specialistId);
         specialistId.setSpecialistStatus(newStatus);
         specialistRepo.update(specialistId);
-       // specialistRepo.changeSpecialistStatusById(specialistId,newStatus);
+        // specialistRepo.changeSpecialistStatusById(specialistId,newStatus);
     }
 
     @Override
     public void addingSpecialistToSubService(Specialist specialist, Service subService) {
+        //todo do logic here
         serviceRepo.addingSpecialistToSubService(specialist, subService);
 
 

@@ -45,18 +45,18 @@ public class Main {
         entityManager = applicationContext.getEntityManager();
 
 
-        ServiceRepo baseRepo = new ServiceRepoImpl(entityManager);
-        ServiceService serviceService = new ServiceServiceImpl(baseRepo);
-        deleteById(502L);
-        System.out.println("still working");
-        Service service = new Service("daftar");
-        service.setDescription("no description");
-        service.setBase_price(10220.20F);
-        //createSubService(null, service);
-        showAllByParentId(902);
+//        ServiceRepo baseRepo = new ServiceRepoImpl(entityManager);
+//        ServiceService serviceService = new ServiceServiceImpl(baseRepo);
+//        deleteById(502L);
+//        System.out.println("still working");
+//        Service service = new Service("daftar");
+//        service.setDescription("no description");
+//        service.setBase_price(10220.20F);
+//        //createSubService(null, service);
+//        showAllByParentId(902);
 
 
-//initializeServices();
+initializeServices();
         //store spefcialist
 
         savingSpecialist();
@@ -79,7 +79,7 @@ public class Main {
 
 
         // adding specialist to a subservice
-        // addingSpecialistToService(1l, 2l);
+        addingSpecialistToService(802l, 510l);
 
 
         // customerside
@@ -87,42 +87,39 @@ public class Main {
         showFirstLayerServices();
 
 
-      createNewCustomer("shayan","moradi","shayan@gmail.com","12345567898");
+        createNewCustomer("shayan", "moradi", "shayan@gmail.com", "12345567898");
         Service chosenService = choseService();
         if (chosenService != null) {
-            registerOrder(222,chosenService.getId(),803l);
+            registerOrder(222, chosenService.getId(), 803l);
 
         }
 
-        
-        
 
         System.out.println("customer orders");
 
 
-            getOrderOfCustomer(102l)
+        getOrderOfCustomer(102l)
                 .orElse(Collections.emptyList())
-                  .forEach(System.out::println);
-
+                .forEach(System.out::println);
 
 
     }
 
-    private  static Service choseService() {
+    private static Service choseService() {
         ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
-CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
-        // Starting the navigation from a root service/category
-        Service selectedService = null; // root service ID is 1
+        CustomerService customerService = new CustomerServiceImpl(null, serviceRepo);
+        Service selectedService = null;
         try {
             selectedService = customerService.navigateAndSelectService();
         } catch (ServiceNotFoundException e) {
             System.out.println("NOTHING FOUND");
-        return null;}
+            return null;
+        }
         try {
 
             System.out.println("Final Selected Service: " + selectedService.getName());
             return selectedService;
-        }catch (Exception e) {
+        } catch (Exception e) {
 
         }
         return null;
@@ -131,7 +128,7 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
     private static Optional<List<Order>> getOrderOfCustomer(long l) {
         CustomerRepo customerRepo = new CustomerRepoImpl(entityManager);
         OrderRepo orderRepo = new OrderRepoImpl(entityManager);
-        CustomerService customerService = new CustomerServiceImpl(customerRepo,orderRepo);
+        CustomerService customerService = new CustomerServiceImpl(customerRepo, orderRepo);
         if (getCustomerById(l).isEmpty()) {
             System.out.println("no customer found");
             return Optional.empty();
@@ -142,12 +139,12 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
 //        if (customerService.getCustomerOrders(getCustomerById(l)).isEmpty()) {
 //            System.err.println("customer orders not found");
 //            return null;
-      //  }
+        //  }
 
- //   return customerService.getCustomerOrders(getCustomerById(l)).get();
+        //   return customerService.getCustomerOrders(getCustomerById(l)).get();
     }
 
-    private static void registerOrder(float offredPrice,Long serviceId,Long customerId) {
+    private static void registerOrder(float offredPrice, Long serviceId, Long customerId) {
         Order order = new Order();
         order.setOrderDescription("test");
         Address address = new Address();
@@ -165,7 +162,7 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
         }
         order.setChoosenService(serviceByName.get());
         Float basePrice = serviceByName.get().getBase_price();
-        if (basePrice >offredPrice) {
+        if (basePrice > offredPrice) {
             System.out.printf("offred price is smaller than base price");
             return;
         }
@@ -178,7 +175,7 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
 
         OrderRepo opRepo = new OrderRepoImpl(entityManager);
         CustomerRepo cRepo = new CustomerRepoImpl(entityManager);
-        CustomerService customerService = new CustomerServiceImpl(cRepo,opRepo);
+        CustomerService customerService = new CustomerServiceImpl(cRepo, opRepo);
 
         Optional<Customer> chosenCustomerOpt = customerService.findById(customerId);
 
@@ -189,13 +186,14 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
         Customer choesnCustomer = customerService.findById(customerId).get();
 
 
-        customerService.registerOrder(choesnCustomer,order);
+        customerService.registerOrder(choesnCustomer, order);
 
     }
 
     public static Optional<Customer> getCustomerById(long id) {
         return Optional.ofNullable(entityManager.find(Customer.class, id));
     }
+
     private static void showFirstLayerServices() {
         ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
         CustomerRepo customerRepo = new CustomerRepoImpl(entityManager);
@@ -210,13 +208,21 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
 
     private static void addingSpecialistToService(long specialistId, long subServiceId) {
         SpecialistRepo baseRepo = new SpecialistRepoImpl(entityManager);
-        Specialist specialist = baseRepo.findById(specialistId).get();
+
+        Optional<Specialist> specialist = baseRepo.findById(specialistId);
+        if (specialist.isEmpty()) {
+            System.out.println("no specialist found");
+            return;
+        }
 
         ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
-        Service service = serviceRepo.findById(subServiceId).get();
-
+        Optional<Service> service = serviceRepo.findById(subServiceId);
+        if (service.isEmpty()) {
+            System.out.printf("service not found");
+            return;
+        }
         AdminService adminService = new AdminServiceImpl(null, serviceRepo);
-        adminService.addingSpecialistToSubService(specialist, service);
+        adminService.addingSpecialistToSubService(specialist.orElse(null), service.orElse(null));
 
     }
 
@@ -271,6 +277,8 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
     }
 
     private static Specialist savingImageToSpecialist(Specialist specialist, String filePath) {
+        //todo move to service
+        //todo jpg format check
         try {
             File imageFile = new File(filePath);
 
@@ -283,6 +291,7 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
             }
 
             FileInputStream fileInputStream = new FileInputStream(imageFile);
+//            fileInputStream.readAllBytes();
             byte[] imageData = new byte[(int) imageFile.length()];
             fileInputStream.read(imageData);
             fileInputStream.close();
@@ -308,7 +317,6 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
 
             byte[] imageData = specialist.getPersonalImage();
 
-            // Save the image data to a file
             FileOutputStream fileOutputStream = new FileOutputStream(savingPath);
             fileOutputStream.write(imageData);
             fileOutputStream.close();
@@ -335,7 +343,6 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
     }
 
     private static void showAllByParentId(long l) {
-        //todo hirarechy is not shown just showing all childerns!
         ServiceRepo baseRepo = new ServiceRepoImpl(entityManager);
         ServiceService serviceService = new ServiceServiceImpl(baseRepo);
         System.out.println(serviceService.findAllByParentId(l));
@@ -351,7 +358,6 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
                 System.out.println("Subservice added successfully.");
             }
         } catch (ServiceAlreadyExistsException e) {
-            // Handle the exception, e.g., inform the user
             System.err.println(e.getMessage());
         }
     }
@@ -369,7 +375,6 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
 
 
     public static void initializeServices() {
-        // Create top-level services (categories)
         Service building = new Service();
         building.setName("Building");
         building.setDescription("Building related services");
@@ -395,13 +400,13 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
         kitchenAppliances.setName("Kitchen Appliances");
         kitchenAppliances.setDescription("Kitchen appliances repair");
         kitchenAppliances.setBase_price(100f);
-        kitchenAppliances.setCategory(false); // This is a real service
+        kitchenAppliances.setCategory(false);
 
         Service laundry = new Service();
         laundry.setName("Laundry Appliances");
         laundry.setDescription("Laundry appliances repair");
         laundry.setBase_price(120f);
-        laundry.setCategory(false); // This is a real service
+        laundry.setCategory(false);
 
         homeAppliances.addSubService(kitchenAppliances);
         homeAppliances.addSubService(laundry);
@@ -428,8 +433,6 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
         cleaning.addSubService(carpetCleaning);
 
 
-        // Save top-level services (categories) with their subservices
-
         ServiceRepo serviceRepo = new ServiceRepoImpl(entityManager);
         ServiceService serviceService = new ServiceServiceImpl(serviceRepo);
         serviceService.save(building);
@@ -441,7 +444,7 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
         System.out.println("Services have been initialized and saved successfully.");
     }
 
-    private static void createNewCustomer(String customerName,String customerLastName,String customerEmail,String customerPass) {
+    private static void createNewCustomer(String customerName, String customerLastName, String customerEmail, String customerPass) {
         Customer customer = new Customer();
         customer.setFirstName(customerName);
         customer.setLastName(customerLastName);
@@ -450,7 +453,7 @@ CustomerService customerService= new CustomerServiceImpl(null,serviceRepo);
         customer.setRegistrationTime(Time.valueOf(LocalTime.now()));
         customer.setPassword(customerPass);
 
-        CustomerRepo customerRepo=new CustomerRepoImpl(entityManager);
+        CustomerRepo customerRepo = new CustomerRepoImpl(entityManager);
         CustomerService customerService = new CustomerServiceImpl(customerRepo);
         customerService.save(customer);
 

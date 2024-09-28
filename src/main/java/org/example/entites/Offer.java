@@ -9,7 +9,7 @@ import java.sql.Time;
 import java.util.Date;
 
 @Entity
-@Table(name = Wallet.TABLE_NAME)
+@Table(name = "offer")
 @Data
 public class Offer extends BaseEntity<Long> {
 

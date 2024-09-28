@@ -30,7 +30,7 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
 
     @Override
     public Optional<T> update(T entity) {
-            entityManager.getTransaction().begin();
+        entityManager.getTransaction().begin();
 
         entityManager.merge(entity);
         entityManager.getTransaction().commit();
@@ -86,7 +86,7 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
 
     @Override
     public Optional<List<T>> findAll() {
-       // entityManager.getTransaction().begin();
+        // entityManager.getTransaction().begin();
         TypedQuery<T> query = entityManager.createQuery("SELECT e FROM " + getEntityClass().getName() + " e", getEntityClass());
 
         return Optional.ofNullable(query.getResultList());
@@ -108,3 +108,4 @@ public abstract class BaseEnittiyRepoImpl<T extends BaseEntity<ID>, ID extends S
 
 
 }
+

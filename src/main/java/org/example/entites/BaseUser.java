@@ -2,6 +2,7 @@ package org.example.entites;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -38,7 +39,9 @@ public class BaseUser extends BaseEntity<Long> {
     @Column
     private Time registrationTime;
 
-    @Size(min = 8, max = 8, message = "The length must be exactly 16 characters.")
+    @Size(min = 8, max = 8, message = "The length must be exactly 8 characters.")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d).+$", message = "Password must contain a combination of letters and numbers")
+
     @Column(nullable = false,name = PASSWORD)
     private String password;
 

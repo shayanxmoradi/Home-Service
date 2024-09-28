@@ -85,10 +85,12 @@ public class CustomerServiceImpl extends BaseEntityServceImpl<Customer,Long, Cus
 
     @Override
     public void updatePassword(Customer customer, String oldPasswrod, String newPassword) {
-        if (findByEmailAndPass(customer.getEmail(), oldPasswrod).isEmpty()) {
+        Optional<Customer> byEmailAndPass = findByEmailAndPass(customer.getEmail(), oldPasswrod);
+        //todo use orelsethrow optional
+        if (byEmailAndPass.isEmpty()) {
             System.out.printf("incorrect password");
         }
-        Customer currentCustomer = findByEmailAndPass(customer.getEmail(), oldPasswrod).get();
+        Customer currentCustomer = byEmailAndPass.get();
         currentCustomer.setPassword(newPassword);
         baseRepository.update(customer);
     }

@@ -41,6 +41,8 @@ public class ServiceServiceImpl extends BaseEntityServceImpl<Service,Long,Servic
              System.err.printf("service with name %s already exists\n", subService.getName());
              return false;
          }
+         //todo change sout with excetptions
+
          return serviceRepo.addSubService(parentId, subService);
      }
 
